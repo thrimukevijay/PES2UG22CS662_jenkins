@@ -2,10 +2,16 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout SCM') {
+            steps {
+                git 'https://github.com/YOUR_GITHUB_REPO.git' // Update with your repo URL
+            }
+        }
+
         stage('Build') {
             steps {
                 script {
-                    sh 'g++ main.cpp -o PES2UG22CS662-1'
+                    sh 'g++ main.cpp -o PES2UG22CS662-1' // Replace with your SRN
                 }
             }
         }
@@ -13,7 +19,10 @@ pipeline {
         stage('Test') {
             steps {
                 script {
-                    sh './PES2UG22CS662-1'
+                    def result = sh(script: './PES2UG22CS662-1', returnStatus: true)
+                    if (result != 0) {
+                        error "Test Failed: Detected an invalid case."
+                    }
                 }
             }
         }
@@ -27,7 +36,7 @@ pipeline {
 
     post {
         failure {
-            error 'Pipeline failed'
+            echo 'Pipeline failed due to an error in one of the stages.'
         }
     }
 }
